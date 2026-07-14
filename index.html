@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shaï Zodehougan — Portfolio Finance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --fantasy:  #D1CFC9; /* Buttercream */
+      --oat:      #BDC4D4; /* Ivory */
+      --oat-dark: #A3ACC1; /* Ivory foncé (bordures) */
+      --mug:      #1C2E4A; /* Midnight Blue */
+      --mug-light:#52677D; /* Dusty Blue */
+      --choco:    #0F1A2B; /* Deep Navy */
+      --white:    #FFFFFF;
+      --gray:     #52677D; /* Dusty Blue (texte secondaire) */
+      --border:   #C7CCDA;
+      --text:     #16233A;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Manrope',sans-serif; background:var(--fantasy); color:var(--text); line-height:1.6; overflow-x:hidden; }
+    .reveal       { opacity:0; transform:translateY(32px);  transition:opacity .65s ease,transform .65s ease; }
+    .reveal-left  { opacity:0; transform:translateX(-32px); transition:opacity .65s ease,transform .65s ease; }
+    .reveal-right { opacity:0; transform:translateX(32px);  transition:opacity .65s ease,transform .65s ease; }
+    .reveal.visible,.reveal-left.visible,.reveal-right.visible { opacity:1; transform:none; }
+    /* NAV */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      padding:0 60px; height:66px;
+      display:flex; align-items:center; justify-content:space-between;
+      transition:background .3s,box-shadow .3s;
+    }
+    nav.scrolled { background:rgba(15,26,43,.95); box-shadow:0 2px 20px rgba(0,0,0,.15); }
+    .nav-logo { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.1rem; color:var(--fantasy); text-decoration:none; letter-spacing:.02em; }
+    .nav-logo span { color:var(--oat); opacity:.7; }
+    .nav-links { display:flex; gap:36px; list-style:none; }
+    .nav-links a { font-size:.76rem; font-weight:500; letter-spacing:.11em; text-transform:uppercase; color:rgba(247,243,237,.6); text-decoration:none; transition:color .2s; }
+    .nav-links a:hover { color:var(--fantasy); }
+    /* HERO — seule section foncée */
+    .hero {
+      background:var(--choco);
+      min-height:100vh; display:flex; align-items:center;
+      padding:100px 60px 80px; position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; top:-160px; right:-160px;
+      width:480px; height:480px; border-radius:50%;
+      background:radial-gradient(circle,rgba(28,46,74,.4) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .hero-inner {
+      max-width:1200px; margin:0 auto; width:100%;
+      display:grid; grid-template-columns:1fr 280px;
+      gap:80px; align-items:center; position:relative; z-index:1;
+    }
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid rgba(232,219,204,.2); border-radius:100px;
+      padding:6px 15px; font-size:.73rem; font-weight:500;
+      color:rgba(232,219,204,.6); margin-bottom:24px;
+    }
+    .hero-name {
+      font-family:'Cormorant Garamond',serif; font-weight:700;
+      font-size:clamp(3rem,7vw,5rem); line-height:1.05;
+      color:var(--fantasy); margin-bottom:8px;
+    }
+    .hero-name .accent { color:var(--oat); }
+    .hero-role { font-size:.95rem; font-weight:300; color:rgba(247,243,237,.5); margin-bottom:28px; }
+    .hero-divider { width:40px; height:2px; background:var(--oat); opacity:.35; margin-bottom:24px; border-radius:2px; }
+    .hero-text { font-size:.93rem; color:rgba(247,243,237,.65); line-height:1.85; max-width:520px; margin-bottom:40px; }
+    .hero-btns { display:flex; gap:12px; flex-wrap:wrap; }
+    .btn-primary { display:inline-flex; align-items:center; gap:8px; background:var(--oat); color:var(--choco); padding:12px 28px; border-radius:6px; font-size:.86rem; font-weight:700; text-decoration:none; transition:background .2s,transform .2s; }
+    .btn-primary:hover { background:var(--fantasy); transform:translateY(-2px); }
+    .btn-secondary { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--fantasy); padding:12px 28px; border-radius:6px; font-size:.86rem; font-weight:500; text-decoration:none; border:1px solid rgba(247,243,237,.2); transition:all .2s; }
+    .btn-secondary:hover { border-color:var(--oat); color:var(--oat); transform:translateY(-2px); }
+    .hero-right { display:flex; justify-content:center; }
+    .hero-photo { width:240px; height:240px; border-radius:50%; object-fit:cover; object-position:center top; border:2px solid rgba(232,219,204,.2); display:block; }
+    /* STATS — fond mug (accent foncé) */
+    .stats-bar { background:var(--mug); padding:28px 60px; }
+    .stats-bar-inner { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); gap:20px; text-align:center; }
+    .stat-num { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.8rem; color:var(--fantasy); display:block; }
+    .stat-lbl { font-size:.68rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:rgba(247,243,237,.55); }
+    /* LABELS */
+    .section-label { font-size:.7rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--mug); margin-bottom:8px; }
+    .section-title { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:clamp(1.6rem,3.5vw,2.6rem); color:var(--choco); margin-bottom:12px; line-height:1.2; }
+    .section-sub   { font-size:.93rem; color:var(--gray); max-width:460px; margin-bottom:48px; }
+    /* TIMELINE — fond oat (clair) */
+    .timeline-section { background:var(--oat); padding:90px 60px; }
+    .timeline-inner { max-width:1200px; margin:0 auto; }
+    .timeline { position:relative; margin-top:40px; }
+    .timeline::before { content:''; position:absolute; left:50%; top:0; bottom:0; width:1px; background:var(--oat-dark); transform:translateX(-50%); }
+    .timeline-item { display:grid; grid-template-columns:1fr 1fr; gap:52px; margin-bottom:40px; align-items:center; position:relative; }
+    .timeline-item::before { content:''; position:absolute; left:50%; top:50%; width:10px; height:10px; border-radius:50%; background:var(--mug); opacity:.7; transform:translate(-50%,-50%); border:2px solid var(--oat); }
+    .timeline-item.right .timeline-content { grid-column:2; grid-row:1; }
+    .timeline-item.right .timeline-empty  { grid-column:1; grid-row:1; }
+    .timeline-content { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:20px; }
+    .timeline-date { font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--mug); opacity:.7; margin-bottom:5px; }
+    .timeline-content h3 { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:.95rem; color:var(--choco); margin-bottom:4px; }
+    .timeline-content p  { font-size:.81rem; color:var(--gray); line-height:1.6; }
+    /* COMPETENCES — fond fantasy */
+    .competences-section { padding:90px 60px; background:var(--fantasy); }
+    .competences-inner { max-width:1200px; margin:0 auto; }
+    .filters { display:flex; gap:9px; flex-wrap:wrap; margin-bottom:40px; }
+    .filter-btn { padding:8px 19px; border-radius:6px; font-size:.78rem; font-weight:600; cursor:pointer; border:1px solid var(--border); background:var(--white); color:var(--text); transition:all .2s; font-family:'Manrope',sans-serif; }
+    .filter-btn.active,.filter-btn:hover { background:var(--mug); color:var(--fantasy); border-color:var(--mug); }
+    .traces-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+    .trace-card { background:var(--white); border:1px solid var(--border); border-radius:12px; overflow:hidden; cursor:pointer; transition:transform .25s,box-shadow .25s; }
+    .trace-card:hover { transform:translateY(-5px); box-shadow:0 16px 40px rgba(15,26,43,.12); }
+    .trace-img-placeholder { width:100%; height:150px; background:linear-gradient(135deg,var(--mug) 0%,var(--mug-light) 100%); display:flex; align-items:center; justify-content:center; font-size:2.6rem; background-size:cover; background-position:center; }
+    .trace-body { padding:18px; }
+    .trace-tags { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:8px; }
+    .trace-tag { font-size:.66rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--mug); background:rgba(28,46,74,.07); padding:3px 9px; border-radius:4px; border:1px solid rgba(28,46,74,.15); }
+    .trace-title { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:.95rem; color:var(--choco); margin-bottom:4px; line-height:1.3; }
+    .trace-meta { font-size:.75rem; color:var(--gray); font-style:italic; margin-bottom:9px; }
+    .trace-highlight { font-size:.77rem; font-weight:600; color:var(--choco); background:var(--oat); padding:5px 9px; border-radius:5px; margin-bottom:7px; display:inline-block; }
+    .trace-link { font-size:.79rem; font-weight:600; color:var(--mug); display:inline-flex; align-items:center; gap:4px; margin-top:3px; }
+    /* SKILLS — fond oat */
+    .skills-section { background:var(--oat); padding:90px 60px; }
+    .skills-inner { max-width:1200px; margin:0 auto; }
+    .skills-grid { display:grid; grid-template-columns:1fr 1fr; gap:72px; margin-top:48px; }
+    .skill-group-title { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.02rem; color:var(--choco); margin-bottom:24px; padding-bottom:9px; border-bottom:1px solid var(--oat-dark); display:inline-block; }
+    .skill-item { margin-bottom:18px; }
+    .skill-header { display:flex; justify-content:space-between; margin-bottom:6px; }
+    .skill-name { font-size:.84rem; font-weight:600; color:var(--choco); }
+    .skill-pct  { font-size:.77rem; font-weight:600; color:var(--mug); }
+    .skill-bar  { height:4px; background:var(--oat-dark); border-radius:100px; overflow:hidden; }
+    .skill-fill { height:100%; background:linear-gradient(90deg,var(--mug),var(--mug-light)); border-radius:100px; width:0; transition:width 1.2s ease; }
+    /* BILAN — fond fantasy */
+    .bilan-section { background:var(--fantasy); padding:90px 60px; }
+    .bilan-inner { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:72px; align-items:center; }
+    .bilan-text { font-size:.92rem; color:var(--gray); line-height:1.85; margin-bottom:16px; }
+    .bilan-right { display:flex; flex-direction:column; gap:12px; }
+    .bilan-card { background:var(--white); border:1px solid var(--border); border-left:3px solid var(--mug); border-radius:0 10px 10px 0; padding:15px 18px; }
+    .bilan-card h4 { font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--mug); margin-bottom:4px; }
+    .bilan-card p  { font-size:.85rem; color:var(--gray); line-height:1.6; }
+    /* CONTACT — fond oat */
+    .contact-section { background:var(--oat); padding:90px 60px; }
+    .contact-inner { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:72px; align-items:start; }
+    .contact-item { display:flex; align-items:center; gap:13px; margin-bottom:18px; }
+    .contact-icon { width:40px; height:40px; border-radius:9px; background:var(--white); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:.9rem; flex-shrink:0; }
+    .contact-label { font-size:.66rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gray); }
+    .contact-value { font-size:.87rem; font-weight:500; color:var(--choco); }
+    .form-label { font-size:.66rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gray); display:block; margin-bottom:5px; }
+    .form-input,.form-textarea { width:100%; padding:11px 14px; border:1px solid var(--border); border-radius:7px; font-family:'Manrope',sans-serif; font-size:.87rem; outline:none; background:var(--white); color:var(--text); transition:border-color .2s; }
+    .form-input:focus,.form-textarea:focus { border-color:var(--mug); }
+    .form-textarea { resize:vertical; }
+    .form-btn { width:100%; background:var(--mug); color:var(--fantasy); padding:13px; border:none; border-radius:7px; font-family:'Manrope',sans-serif; font-size:.87rem; font-weight:700; cursor:pointer; transition:background .2s; }
+    .form-btn:hover { background:var(--mug-light); }
+    /* FOOTER */
+    footer { background:var(--choco); text-align:center; padding:24px; font-size:.75rem; color:rgba(247,243,237,.25); border-top:1px solid rgba(247,243,237,.05); }
+    footer span { color:rgba(247,243,237,.5); }
+    /* MODAL */
+    .modal-overlay { position:fixed; inset:0; background:rgba(9,15,25,.82); z-index:200; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px; overflow-y:auto; opacity:0; pointer-events:none; transition:opacity .3s; }
+    .modal-overlay.open { opacity:1; pointer-events:all; }
+    .modal { background:var(--fantasy); border-radius:14px; width:100%; max-width:760px; padding:42px; position:relative; transform:translateY(20px); transition:transform .3s; border-top:3px solid var(--mug); }
+    .modal-overlay.open .modal { transform:translateY(0); }
+    .modal-close { position:absolute; top:18px; right:18px; width:32px; height:32px; border-radius:7px; background:var(--oat); border:none; cursor:pointer; font-size:.85rem; display:flex; align-items:center; justify-content:center; color:var(--choco); }
+    .modal-tags { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:14px; }
+    .modal-tag { font-size:.66rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:4px 12px; border-radius:4px; }
+    .modal-tag.dark    { background:var(--choco); color:var(--fantasy); }
+    .modal-tag.mug     { background:var(--mug);   color:var(--fantasy); }
+    .modal-tag.outline { background:var(--white);  color:var(--choco); border:1px solid var(--border); }
+    .modal h2 { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.4rem; color:var(--choco); margin-bottom:4px; line-height:1.3; }
+    .modal-source { font-size:.78rem; color:var(--gray); font-style:italic; margin-bottom:26px; }
+    .modal-section { margin-bottom:22px; }
+    .modal-section-title { font-size:.68rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--mug); margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+    .modal-section p { font-size:.89rem; line-height:1.78; color:var(--text); }
+    .modal-tools { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:11px; }
+    .tool-tag { background:var(--oat); color:var(--choco); font-size:.73rem; font-weight:500; padding:3px 10px; border-radius:4px; border:1px solid var(--border); }
+    .modal-result-box { background:var(--oat); border-left:3px solid var(--mug); border-radius:0 7px 7px 0; padding:12px 16px; font-size:.85rem; font-weight:600; color:var(--choco); margin-top:7px; }
+    .modal-quote { border-left:2px solid var(--oat-dark); padding:10px 16px; font-style:italic; font-size:.87rem; color:var(--gray); margin-top:12px; }
+    .modal-gallery { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; }
+    .modal-gallery img { width:100%; height:150px; object-fit:cover; border-radius:8px; border:1px solid var(--border); display:block; }
+    @media(max-width:900px){
+      nav { padding:0 24px; }
+      .hero { padding:100px 24px 60px; }
+      .hero-inner { grid-template-columns:1fr; }
+      .hero-right { display:none; }
+      .stats-bar { padding:26px 24px; }
+      .stats-bar-inner { grid-template-columns:repeat(2,1fr); }
+      .timeline-section,.competences-section,.skills-section,.bilan-section,.contact-section { padding:60px 24px; }
+      .timeline::before { left:18px; }
+      .timeline-item { grid-template-columns:1fr; padding-left:40px; }
+      .timeline-item::before { left:18px; top:20px; }
+      .timeline-item.right .timeline-content { grid-column:1; }
+      .timeline-item.right .timeline-empty { display:none; }
+      .traces-grid { grid-template-columns:1fr; }
+      .skills-grid { grid-template-columns:1fr; gap:32px; }
+      .bilan-inner,.contact-inner { grid-template-columns:1fr; gap:32px; }
+    }
+  </style>
+</head>
+<body>
+<nav id="navbar">
+  <a href="#" class="nav-logo">Shaï <span>Z</span></a>
+  <ul class="nav-links">
+    <li><a href="#accueil">Accueil</a></li>
+    <li><a href="#parcours">Parcours</a></li>
+    <li><a href="#competences">Compétences</a></li>
+    <li><a href="#synthese">Synthèse</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+<!-- HERO (seule section foncée) -->
+<section class="hero" id="accueil">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">🎓 BUT GEA · IUT de Saint-Denis · Sorbonne Paris Nord</div>
+      <h1 class="hero-name">Shaï<br><span class="accent">Zodehougan</span></h1>
+      <p class="hero-role">Finance & Innovation · Entrepreneuriat International · Fintech</p>
+      <div class="hero-divider"></div>
+      <p class="hero-text">Étudiant en Master Finance à Audencia Business School, je combine une formation académique solide en analyse financière avec une expérience entrepreneuriale concrète. Habitué à prendre des décisions basées sur des données — qu'il s'agisse de négocier avec des fournisseurs en Chine ou d'analyser des flux comptables en stage — je cherche à approfondir ces compétences au sein d'une structure de référence dans le financement d'entreprise.<br><br>À partir d'août 2026, j'intégrerai le Programme Grande École d'Audencia Business School, spécialisation Finance — <strong>alternance de 24 mois recherchée</strong> (rythme 3 semaines entreprise / 1 semaine formation).</p>
+      <div class="hero-btns">
+        <a href="cv.pdf" class="btn-primary">⬇️ Télécharger mon CV</a>
+        <a href="#competences" class="btn-secondary">Voir mon portfolio →</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <img src="photo.jpg" alt="Shaï Zodehougan" class="hero-photo"/>
+    </div>
+  </div>
+</section>
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-bar-inner">
+    <div class="reveal"><span class="stat-num">75 000 €</span><span class="stat-lbl">CA généré — Amazon FBA (2025)</span></div>
+    <div class="reveal"><span class="stat-num" data-target="15">0</span><span class="stat-lbl">Usines visitées & négociées (Chine)</span></div>
+    <div class="reveal"><span class="stat-num" data-target="2000">0</span><span class="stat-lbl">Produits importés (2025)</span></div>
+    <div class="reveal"><span class="stat-num">150 000 €</span><span class="stat-lbl">Capital structuré — SAE VroomPrestige</span></div>
+  </div>
+</div>
+<!-- TIMELINE (oat — clair) -->
+<section class="timeline-section" id="parcours">
+  <div class="timeline-inner">
+    <div class="reveal">
+      <div class="section-label">Chronologie</div>
+      <h2 class="section-title">Mon parcours</h2>
+      <p class="section-sub">De la formation aux expériences terrain, une progression constante entre rigueur académique et pratique entrepreneuriale.</p>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item reveal"><div class="timeline-content"><div class="timeline-date">Sept. 2026 – Juill. 2028</div><h3>Master 1 Finance — Audencia Business School</h3><p>Programme Grande École · Alternance de 24 mois · Paris</p></div><div></div></div>
+      <div class="timeline-item right reveal"><div></div><div class="timeline-content"><div class="timeline-date">Mars – Juin 2025</div><h3>Assistant Comptable (stage)</h3><p>Phone Center · Rosny-sur-Seine</p></div></div>
+      <div class="timeline-item reveal"><div class="timeline-content"><div class="timeline-date">Été 2024 (JO Paris)</div><h3>Vente terrain — Le Coq Sportif</h3><p>Corner Galeries Lafayette, clientèle internationale · Paris</p></div><div></div></div>
+      <div class="timeline-item right reveal"><div></div><div class="timeline-content"><div class="timeline-date">Mars – Mai 2024</div><h3>Assistant de Direction, Pôle comptable et financier</h3><p>LFM Radio · Mantes-la-Jolie</p></div></div>
+      <div class="timeline-item reveal"><div class="timeline-content"><div class="timeline-date">Sept. 2023 – Présent</div><h3>Layth Distribution — Amazon FBA</h3><p>Auto-entreprise, e-commerce international · Paris</p></div><div></div></div>
+      <div class="timeline-item right reveal"><div></div><div class="timeline-content"><div class="timeline-date">Avr. – Mai 2023</div><h3>Assistant Contrôle de gestion (stage)</h3><p>Suivi des stocks, analyse de KPI · Le Coq Sportif, Aubergenville</p></div></div>
+      <div class="timeline-item reveal"><div class="timeline-content"><div class="timeline-date">Sept. 2022 – Juin 2025</div><h3>Bachelor GEA</h3><p>Gestion comptable, fiscale et financière · Université Sorbonne Paris Nord / IUT de Saint-Denis</p></div><div></div></div>
+      <div class="timeline-item right reveal"><div></div><div class="timeline-content"><div class="timeline-date">Sept. 2019 – Juil. 2022</div><h3>Baccalauréat général — mention assez bien</h3><p>Spécialités mathématiques, sciences économiques et sociales, physique-chimie · Lycée Saint-Exupéry, Mantes-la-Jolie</p></div></div>
+      <div class="timeline-item reveal"><div class="timeline-content"><div class="timeline-date">Déc. 2018</div><h3>Stage de découverte (3ème) — Natixis</h3><p>Salle des marchés, portfolio management, crédit management, cash management, finance verte · Paris</p></div><div></div></div>
+    </div>
+  </div>
+</section>
+<!-- COMPETENCES (fantasy — clair) -->
+<section class="competences-section" id="competences">
+  <div class="competences-inner">
+    <div class="reveal">
+      <div class="section-label">Portfolio Master Finance</div>
+      <h2 class="section-title">Mes Compétences</h2>
+      <p class="section-sub">Sélection de compétences clés issues de mon parcours académique et entrepreneurial.</p>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterTraces('all',this)">Toutes (7)</button>
+      <button class="filter-btn" onclick="filterTraces('finance',this)">💰 Finance</button>
+      <button class="filter-btn" onclick="filterTraces('international',this)">🌍 International</button>
+      <button class="filter-btn" onclick="filterTraces('comptabilite',this)">📊 Comptabilité</button>
+      <button class="filter-btn" onclick="filterTraces('entrepreneuriat',this)">🚀 Entrepreneuriat</button>
+    </div>
+    <div class="traces-grid" id="tracesGrid">
+      <div class="trace-card reveal" data-cat="finance entrepreneuriat" onclick="openModal('modal-vroom')"><div class="trace-img-placeholder">💰</div><div class="trace-body"><div class="trace-tags"><span class="trace-tag">💰 Finance</span><span class="trace-tag">🚀 Entrepreneuriat</span></div><div class="trace-title">Modélisation financière & structuration de capital</div><div class="trace-meta">SAE Création d'entreprise — VroomPrestige · BUT GEA · Déc. 2024</div><div class="trace-highlight">📈 CA prévisionnel : 214k€ → 240k€ (3 ans)</div><span class="trace-link">Voir le détail →</span></div></div>
+      <div class="trace-card reveal" data-cat="entrepreneuriat international" onclick="openModal('modal-layth')"><div class="trace-img-placeholder" style="background-image:url('amazon-dashboard-1.jpg');"></div><div class="trace-body"><div class="trace-tags"><span class="trace-tag">🌍 International</span><span class="trace-tag">🚀 Entrepreneuriat</span></div><div class="trace-title">Négociation fournisseurs & pilotage e-commerce international</div><div class="trace-meta">Layth Distribution — Amazon FBA · Paris · Sept. 2023 – Présent</div><div class="trace-highlight">💶 75 000 € de CA généré (2025)</div><span class="trace-link">Voir le détail →</span></div></div>
+      <div class="trace-card reveal" data-cat="international" onclick="openModal('modal-chine')"><div class="trace-img-placeholder" style="background-image:url('chine-yugarden-1.jpg');"></div><div class="trace-body"><div class="trace-tags"><span class="trace-tag">🌍 International</span></div><div class="trace-title">Négociation interculturelle & sourcing industriel international</div><div class="trace-meta">Déplacements terrain en Chine · Sourcing & transit · 2024-2025</div><div class="trace-highlight">🏭 ~15 usines visitées & négociées</div><span class="trace-link">Voir le détail →</span></div></div>
+      <div class="trace-card reveal" data-cat="comptabilite finance" onclick="openModal('modal-phonecenter')"><div class="trace-img-placeholder">🔗</div><div class="trace-body"><div class="trace-tags"><span class="trace-tag">📊 Comptabilité</span><span class="trace-tag">💰 Finance</span></div><div class="trace-title">Rigueur comptable & vision fintech / innovation</div><div class="trace-meta">Stage Comptable — Phone Center · Rosny-sur-Seine · Mars – Juin 2025</div><div class="trace-highlight">🔗 Scénario smart contract & traçabilité QR conçus</div><span class="trace-link">Voir le détail →</span></div></div>
+      <div class="trace-card reveal" data-cat="finance comptabilite" onclick="openModal('modal-lfm')"><div class="trace-img-placeholder">📊</div><div class="trace-body"><div class="trace-tags"><span class="trace-tag">💰 Finance</span><span class="trace-tag">📊 Comptabilité</span></div><div class="trace-title">Pilotage financier & reporting stratégique</div><div class="trace-meta">LFM Radio — Assistant de Direction · Mantes-la-Jolie · Mars – Mai 2024</div><div class="trace-highlight">📊 Prévision de trésorerie à 6 mois présentée au CA</div><span class="trace-link">Voir le détail →</span></div></div>
+      <div class="trace-card reveal" data-cat="international" onclick="openModal('modal-coqsportif')"><div class="trace-img-placeholder">🛍️</div><div class="trace-body"><div class="trace-tags"><span class="trace-tag">🌍 International</span></div><div class="trace-title">Vente, contrôle de gestion & relation client internationale</div><div class="trace-meta">Le Coq Sportif — Aubergenville & Galeries Lafayette (JO 2024) · Paris</div><div class="trace-highlight">📉 -12% de stocks excédentaires</div><span class="trace-link">Voir le détail →</span></div></div>
+      <div class="trace-card reveal" data-cat="entrepreneuriat" onclick="openModal('modal-projet')"><div class="trace-img-placeholder">🚀</div><div class="trace-body"><div class="trace-tags"><span class="trace-tag">🚀 Entrepreneuriat</span></div><div class="trace-title">Gestion de projet & polyvalence entrepreneuriale</div><div class="trace-meta">Layth Distribution & activités indépendantes · depuis 2023</div><div class="trace-highlight">🧭 Pilotage seul de A à Z (sourcing → SAV)</div><span class="trace-link">Voir le détail →</span></div></div>
+    </div>
+  </div>
+</section>
+<!-- SKILLS (oat — clair) -->
+<section class="skills-section">
+  <div class="skills-inner">
+    <div class="reveal">
+      <div class="section-label">Compétences</div>
+      <h2 class="section-title">Langues & Outils</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="reveal-left">
+        <div class="skill-group-title">Langues</div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">Français — langue maternelle</span><span class="skill-pct">100%</span></div><div class="skill-bar"><div class="skill-fill" data-width="100"></div></div></div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">Anglais (B2 — TOEIC 880/990)</span><span class="skill-pct">75%</span></div><div class="skill-bar"><div class="skill-fill" data-width="75"></div></div></div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">Espagnol (B1)</span><span class="skill-pct">55%</span></div><div class="skill-bar"><div class="skill-fill" data-width="55"></div></div></div>
+      </div>
+      <div class="reveal-right">
+        <div class="skill-group-title">Outils & Technologies</div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">Pack Office / Excel</span><span class="skill-pct">85%</span></div><div class="skill-bar"><div class="skill-fill" data-width="85"></div></div></div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">Amazon Seller Central</span><span class="skill-pct">85%</span></div><div class="skill-bar"><div class="skill-fill" data-width="85"></div></div></div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">Sage</span><span class="skill-pct">70%</span></div><div class="skill-bar"><div class="skill-fill" data-width="70"></div></div></div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">VBA</span><span class="skill-pct">40%</span></div><div class="skill-bar"><div class="skill-fill" data-width="40"></div></div></div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">SQL</span><span class="skill-pct">40%</span></div><div class="skill-bar"><div class="skill-fill" data-width="40"></div></div></div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">Access</span><span class="skill-pct">40%</span></div><div class="skill-bar"><div class="skill-fill" data-width="40"></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- BILAN (fantasy — clair) -->
+<section class="bilan-section" id="synthese">
+  <div class="bilan-inner">
+    <div class="reveal-left">
+      <div class="section-label">Synthèse</div>
+      <h2 class="section-title">Mon profil en quelques mots</h2>
+      <p class="bilan-text">À l'issue de mon BUT GEA en gestion comptable, fiscale et financière, je me définis comme un profil finance à double culture : la rigueur analytique acquise sur les bancs de l'IUT et en stage (saisie comptable, rapprochements bancaires, plans de trésorerie, modélisation prévisionnelle), et le sens du terrain forgé en dirigeant ma propre activité d'import-export à l'international.</p>
+      <p class="bilan-text">Ce qui me distingue, c'est cette capacité à faire dialoguer deux mondes qu'on oppose souvent : la rigueur du chiffre et l'audace de l'entrepreneur, la finance classique et l'innovation technologique. Je m'intéresse à la façon dont la fintech et la blockchain peuvent réinventer les métiers financiers, au service de secteurs à forte valeur perçue où la traçabilité et la confiance sont stratégiques.</p>
+    </div>
+    <div class="bilan-right reveal-right">
+      <div class="bilan-card"><h4>Profil</h4><p>Profil finance à double culture : rigueur analytique (comptabilité, modélisation financière) et sens du terrain entrepreneurial international</p></div>
+      <div class="bilan-card"><h4>Points forts</h4><p>Analyse & modélisation financière · Fibre entrepreneuriale internationale · Vision finance × innovation (fintech/blockchain) · Rigueur comptable & adaptabilité interculturelle</p></div>
+      <div class="bilan-card"><h4>Secteurs visés</h4><p>Finance & Fintech · Finance décentralisée / blockchain appliquée · Parfumerie de niche, maroquinerie, luxe</p></div>
+      <div class="bilan-card"><h4>Projet</h4><p>Programme Grande École Audencia, spécialisation Finance · Alternance de 24 mois à partir d'août 2026 (3 sem. entreprise / 1 sem. formation)</p></div>
+    </div>
+  </div>
+</section>
+<!-- CONTACT (oat — clair) -->
+<section class="contact-section" id="contact">
+  <div class="contact-inner">
+    <div class="reveal-left">
+      <div class="section-label">Me contacter</div>
+      <h2 class="section-title">Travaillons ensemble</h2>
+      <p style="font-size:.9rem;color:var(--gray);margin-bottom:32px;">Une opportunité d'alternance, un projet, une collaboration ?<br>N'hésite pas à me contacter directement.</p>
+      <div class="contact-item"><div class="contact-icon">📱</div><div><div class="contact-label">Téléphone</div><div class="contact-value">07 81 66 32 10</div></div></div>
+      <div class="contact-item"><div class="contact-icon">✉️</div><div><div class="contact-label">Email</div><div class="contact-value">shaizodehougan@gmail.com</div></div></div>
+      <div class="contact-item"><div class="contact-icon">📍</div><div><div class="contact-label">Localisation</div><div class="contact-value">Paris</div></div></div>
+    </div>
+    <div class="reveal-right">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div><label class="form-label">Nom complet</label><input type="text" class="form-input" placeholder="Votre nom"/></div>
+        <div><label class="form-label">Adresse email</label><input type="email" class="form-input" placeholder="votre@email.com"/></div>
+        <div><label class="form-label">Objet</label><input type="text" class="form-input" placeholder="Opportunité, alternance..."/></div>
+        <div><label class="form-label">Message</label><textarea class="form-textarea" rows="4" placeholder="Votre message..."></textarea></div>
+        <button class="form-btn">Envoyer le message</button>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>© 2026 <span>Shaï Zodehougan</span> · Portfolio Master Finance · Audencia Business School</footer>
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-vroom"><div class="modal"><button class="modal-close" onclick="closeModal('modal-vroom')">✕</button><div class="modal-tags"><span class="modal-tag dark">💰 Finance</span><span class="modal-tag mug">🚀 Entrepreneuriat</span></div><h2>Modélisation financière & structuration de capital</h2><div class="modal-source">📅 SAE Création d'entreprise — VroomPrestige · BUT GEA · équipe de 4 · Décembre 2024</div><div class="modal-section"><div class="modal-section-title">Contexte & Situation professionnelle</div><p>Projet de création d'entreprise en équipe de 4 étudiants, dans le cadre du BUT GEA. Conception de <strong>VroomPrestige</strong>, SARL de sous-location de véhicules haut de gamme et hybrides (Clio 5 Alpine, Golf 8R, Audi A3 Sportback, Mercedes Classe A hybride), basée au Chesnay (Yvelines). Capital social de départ : 78 000€ réparti en 780 parts sociales de 100€, dont un apport personnel de 18 000€ (23% du capital). C'est le volet financier du projet que j'ai porté : modélisation, structuration du capital et arbitrages de financement.</p></div><div class="modal-section"><div class="modal-section-title">Démarche & Méthodes de travail</div><div class="modal-tools"><span class="tool-tag">Business plan</span><span class="tool-tag">Étude de marché & SWOT</span><span class="tool-tag">Plan de financement 3 ans</span><span class="tool-tag">Compte de résultat prévisionnel</span><span class="tool-tag">Bilans N/N+1/N+2</span><span class="tool-tag">TVA intracommunautaire</span><span class="tool-tag">Tableaux d'amortissement</span><span class="tool-tag">Statuts de SARL</span></div><p>Construction d'un compte de résultat prévisionnel détaillé par véhicule (ex. Golf 8R : 79 200€ → 82 500€ → 89 100€), comparatif des modes de remboursement d'emprunt (amortissements constants / annuités constantes / in fine), et stratégie tarifaire (prix 15-20% sous la concurrence en lancement, puis +8%/an) avec un objectif de 20% de part de marché dans les Yvelines à 3 ans.</p></div><div class="modal-section"><div class="modal-section-title">Résultat & Bilan</div><div class="modal-result-box">📈 CA prévisionnel : 214 080€ → 223 000€ → 240 840€ · Résultat net : 37k€ → 51k€ → 130k€ · Capital renforcé de 78k€ à 150k€ par incorporation des réserves</div><p style="margin-top:10px;">Un emprunt de 150 000€ a été structuré en N+2 (méthode des annuités constantes, coût total des intérêts de 18 470€) pour devenir propriétaire de la flotte, avec une politique de répartition du résultat pensée sur 3 exercices entre réserve légale, réserve facultative et dividendes différés.</p></div><div class="modal-quote">"Ce projet m'a appris à voir dans chaque chiffre une décision stratégique : structurer un capital, c'est déjà préparer la confiance des partenaires financiers de demain."</div></div></div>
+<div class="modal-overlay" id="modal-layth"><div class="modal"><button class="modal-close" onclick="closeModal('modal-layth')">✕</button><div class="modal-tags"><span class="modal-tag dark">🌍 International</span><span class="modal-tag mug">🚀 Entrepreneuriat</span></div><h2>Négociation fournisseurs & pilotage e-commerce international</h2><div class="modal-source">📅 Layth Distribution — Amazon FBA (auto-entreprise) · Paris · Sept. 2023 – Présent</div><div class="modal-section"><div class="modal-section-title">Contexte & Situation professionnelle</div><p>Création et pilotage d'une boutique en ligne à destination d'un marché international (Europe, Moyen-Orient) sur Amazon FBA, avec mise en place d'une chaîne logistique (supply chain) performante, de la négociation fournisseur jusqu'à la vente finale.</p></div><div class="modal-section"><div class="modal-section-title">Démarche & Méthodes de travail</div><div class="modal-tools"><span class="tool-tag">Amazon Seller Central</span><span class="tool-tag">Négociation fournisseurs</span><span class="tool-tag">A/B Testing fiches produits</span><span class="tool-tag">SEO</span><span class="tool-tag">Optimisation des marges</span><span class="tool-tag">Supply chain internationale</span></div><p>Négociation directe des prix, volumes et conditions d'approvisionnement afin d'optimiser marges et structure de coûts. Amélioration continue des fiches produits par A/B testing et optimisation du référencement naturel (SEO) pour renforcer la visibilité des annonces.</p><div class="modal-gallery"><img src="amazon-dashboard-1.jpg" alt="Tableau de bord Amazon Seller Central"/><img src="amazon-dashboard-2.jpg" alt="Tableau de bord Amazon Seller Central"/></div></div><div class="modal-section"><div class="modal-section-title">Résultat & Bilan</div><div class="modal-result-box">💶 ~75 000€ de CA (2025) · ~2 000 produits importés (2025) · Taux de conversion : 10% → 15% (+50%)</div></div><div class="modal-quote">"Piloter seul une activité e-commerce internationale, c'est apprendre à décider vite, avec des données, et à assumer chaque arbitrage."</div></div></div>
+<div class="modal-overlay" id="modal-chine"><div class="modal"><button class="modal-close" onclick="closeModal('modal-chine')">✕</button><div class="modal-tags"><span class="modal-tag dark">🌍 International</span><span class="modal-tag outline">🇨🇳 Sourcing & négociation</span></div><h2>Négociation interculturelle & sourcing industriel international</h2><div class="modal-source">📅 Déplacements terrain en Chine — sourcing Layth Distribution & activité de transit</div><div class="modal-section"><div class="modal-section-title">Contexte & Situation professionnelle</div><p><strong>Sourcing Layth Distribution (3 mois) :</strong> déplacement pour évaluer la solidité opérationnelle des fournisseurs (capacité de production, respect des engagements contractuels, normes de conditionnement) — ~15 usines visitées et négociées directement (prix, volumes, couleurs, sourcing de nouveaux produits).<br><br><strong>Sourcing activité de transit :</strong> déplacement complémentaire pour sourcer une nouvelle activité de logistique — visite d'usines de mobilier à Foshan, négociation directe avec un transitaire (prix, quantités, conditionnement, tarifs dégressifs selon les volumes).</p><div class="modal-gallery"><img src="chine-entrepot-1.jpg" alt="Entrepôt fournisseur en Chine"/><img src="chine-entrepot-2.jpg" alt="Entrepôt fournisseur en Chine"/></div></div><div class="modal-section"><div class="modal-section-title">Démarche & Méthodes de travail</div><div class="modal-tools"><span class="tool-tag">Négociation interculturelle</span><span class="tool-tag">Sourcing produit</span><span class="tool-tag">Tarifs dégressifs</span><span class="tool-tag">Évaluation capacité de production</span><span class="tool-tag">Contrôle qualité</span><span class="tool-tag">Relation transitaire</span></div><p>Négociation sans intermédiaire des conditions commerciales complexes (prix, volumes, qualité, délais) directement sur le terrain, en environnement interculturel.</p></div><div class="modal-section"><div class="modal-section-title">Résultat & Bilan</div><div class="modal-result-box">🏭 ~15 usines rencontrées et négociées · Sourcing à Foshan (mobilier) · Partenariat transitaire structuré par palier de volume</div></div><div class="modal-quote">"Négocier une usine à l'autre bout du monde, sans intermédiaire, c'est la meilleure école d'autonomie que je connaisse."</div></div></div>
+<div class="modal-overlay" id="modal-phonecenter"><div class="modal"><button class="modal-close" onclick="closeModal('modal-phonecenter')">✕</button><div class="modal-tags"><span class="modal-tag dark">📊 Comptabilité</span><span class="modal-tag mug">🔗 Fintech & Innovation</span></div><h2>Rigueur comptable & vision fintech / innovation</h2><div class="modal-source">📅 Stage Comptable — Phone Center · Rosny-sur-Seine · 17 mars – 6 juin 2025 (12 semaines)</div><div class="modal-section"><div class="modal-section-title">Contexte & Situation professionnelle</div><p>Stage de fin d'études BUT GEA chez Phone Center (SASU, activité double : transport taxi + vente/réparation d'accessoires téléphoniques), TPE en environnement 100% manuel, sans service comptable structuré.</p></div><div class="modal-section"><div class="modal-section-title">Démarche & Méthodes de travail</div><div class="modal-tools"><span class="tool-tag">Saisie comptable (partie double)</span><span class="tool-tag">Rapprochements bancaires</span><span class="tool-tag">Suivi paiements</span><span class="tool-tag">Déclarations TVA</span><span class="tool-tag">Blockchain / smart contracts</span></div><p>Au-delà des missions comptables classiques (saisie, classement, rapprochements bancaires, suivi des paiements), identification des frictions opérationnelles d'une TPE (paiements manuels, absence de traçabilité, dépendance au papier) et construction, avec le chef de projet IT, d'un scénario concret d'automatisation par smart contract : déclenchement automatique du paiement fournisseur à réception conforme du colis, écriture comptable générée et lettrée automatiquement. Conception d'un système de traçabilité produit par QR code pour le client final.</p></div><div class="modal-section"><div class="modal-section-title">Résultat & Bilan</div><div class="modal-result-box">🔗 Scénario smart contract & système de traçabilité QR code conçus · Mention "ponctuel et motivé" du tuteur professionnel</div><p style="margin-top:10px;">Mémoire structuré autour de la problématique : <em>"Comment fiabiliser, fluidifier et moderniser la gestion financière quotidienne dans une TPE, sans perdre le lien humain ni la logique métier ?"</em> — en lien direct avec mon propre projet entrepreneurial (Layth Distribution).</p></div><div class="modal-quote">"Ce stage m'a montré que la rigueur comptable et l'innovation technologique ne s'opposent pas — elles se renforcent, à condition de ne jamais perdre le lien humain."</div></div></div>
+<div class="modal-overlay" id="modal-lfm"><div class="modal"><button class="modal-close" onclick="closeModal('modal-lfm')">✕</button><div class="modal-tags"><span class="modal-tag dark">💰 Finance</span><span class="modal-tag mug">📊 Reporting</span></div><h2>Pilotage financier & reporting stratégique</h2><div class="modal-source">📅 LFM Radio — Assistant de Direction, Pôle comptable et financier · Mantes-la-Jolie · Mars – Mai 2024</div><div class="modal-section"><div class="modal-section-title">Contexte & Situation professionnelle</div><p>Stage au sein d'une station de radio locale, en charge de la gestion de la comptabilité courante et de la production d'outils de pilotage financier destinés à la gouvernance de la structure.</p></div><div class="modal-section"><div class="modal-section-title">Démarche & Méthodes de travail</div><div class="modal-tools"><span class="tool-tag">Plans de trésorerie</span><span class="tool-tag">Plans de financement</span><span class="tool-tag">Reporting mensuel</span><span class="tool-tag">Comptabilité courante</span></div><p>Élaboration de plans de trésorerie et de financement présentés directement au Conseil d'administration, et participation à la rédaction des reportings financiers mensuels.</p></div><div class="modal-section"><div class="modal-section-title">Résultat & Bilan</div><div class="modal-result-box">📊 Prévision de trésorerie à 6 mois construite pour sécuriser la pérennité de l'antenne</div></div><div class="modal-quote">"Produire un livrable financier destiné à un Conseil d'administration m'a appris à traduire des chiffres en décisions."</div></div></div>
+<div class="modal-overlay" id="modal-coqsportif"><div class="modal"><button class="modal-close" onclick="closeModal('modal-coqsportif')">✕</button><div class="modal-tags"><span class="modal-tag dark">🌍 International</span><span class="modal-tag outline">🛍️ Vente & Contrôle de gestion</span></div><h2>Vente, contrôle de gestion & relation client internationale</h2><div class="modal-source">📅 Le Coq Sportif — Assistant Contrôle de gestion · Aubergenville · Avril – Mai 2023 · puis Vente terrain, Galeries Lafayette · Été 2024 (JO Paris)</div><div class="modal-section"><div class="modal-section-title">Contexte & Situation professionnelle</div><p><strong>Contrôle de gestion (Aubergenville) :</strong> stage axé sur le suivi des stocks et l'analyse d'indicateurs de performance (KPI), avec optimisation des réapprovisionnements.<br><br><strong>Vente terrain (Galeries Lafayette, JO 2024) :</strong> poste de vente pour Le Coq Sportif au corner Galeries Lafayette, en pleine période des Jeux Olympiques de Paris 2024, auprès d'une clientèle majoritairement internationale — conseil, vente et échange en anglais, dans un rôle proche de l'ambassadeur du savoir-faire français.</p></div><div class="modal-section"><div class="modal-section-title">Démarche & Méthodes de travail</div><div class="modal-tools"><span class="tool-tag">Suivi des stocks</span><span class="tool-tag">Analyse de KPI</span><span class="tool-tag">Optimisation réapprovisionnements</span><span class="tool-tag">Vente & conseil client</span><span class="tool-tag">Anglais professionnel</span></div></div><div class="modal-section"><div class="modal-section-title">Résultat & Bilan</div><div class="modal-result-box">📉 -12% de stocks excédentaires · Vente à une clientèle internationale en contexte de forte affluence (JO Paris 2024)</div></div><div class="modal-quote">"Cette double expérience m'a montré qu'analyse quantitative et aisance relationnelle se nourrissent l'une l'autre, sur la même marque."</div></div></div>
+<div class="modal-overlay" id="modal-projet"><div class="modal"><button class="modal-close" onclick="closeModal('modal-projet')">✕</button><div class="modal-tags"><span class="modal-tag dark">🚀 Entrepreneuriat</span><span class="modal-tag outline">🧭 Polyvalence</span></div><h2>Gestion de projet & polyvalence entrepreneuriale</h2><div class="modal-source">📅 Layth Distribution & activités indépendantes · depuis 2023</div><div class="modal-section"><div class="modal-section-title">Contexte & Situation professionnelle</div><p>En tant qu'auto-entrepreneur, je pilote seul l'intégralité d'une activité commerciale internationale : de la recherche de produits jusqu'au service client, en passant par la logistique, la trésorerie, le marketing et la relation fournisseurs.</p></div><div class="modal-section"><div class="modal-section-title">Démarche & Méthodes de travail</div><div class="modal-tools"><span class="tool-tag">Gestion de projet de A à Z</span><span class="tool-tag">Autonomie & décision</span><span class="tool-tag">Priorisation</span><span class="tool-tag">Coordination logistique internationale</span><span class="tool-tag">Résolution de problèmes</span></div><p>Pilotage simultané de toutes les fonctions d'une entreprise (sourcing, achats, logistique, vente, SAV, trésorerie) sans équipe dédiée, coordination de partenaires sur plusieurs pays, et préparation d'une seconde activité (transit/logistique) en parallèle de la première.</p></div><div class="modal-section"><div class="modal-section-title">Résultat & Bilan</div><div class="modal-result-box">🧭 Un profil "couteau suisse" capable de prendre en main un sujet complexe seul, de le structurer et de le mener au bout</div></div><div class="modal-quote">"Tout gérer seul m'a appris qu'on ne priorise bien que ce qu'on comprend vraiment."</div></div></div>
+<script>
+  window.addEventListener('scroll',()=>{
+    document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50);
+  });
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        e.target.querySelectorAll('.skill-fill').forEach(b=>{ b.style.width=b.dataset.width+'%'; });
+        e.target.querySelectorAll('.stat-num[data-target]').forEach(el=>counter(el,+el.dataset.target));
+      }
+    });
+  },{threshold:.15});
+  document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>obs.observe(el));
+  function counter(el,t){
+    let s=0,step=t/(1500/16);
+    const tm=setInterval(()=>{
+      s+=step;
+      if(s>=t){el.textContent=t.toLocaleString('fr-FR');clearInterval(tm);}
+      else el.textContent=Math.floor(s).toLocaleString('fr-FR');
+    },16);
+  }
+  function openModal(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+  function closeModal(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+  document.querySelectorAll('.modal-overlay').forEach(o=>{
+    o.addEventListener('click',function(e){if(e.target===this){this.classList.remove('open');document.body.style.overflow='';}});
+  });
+  function filterTraces(cat,btn){
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.trace-card').forEach(c=>{
+      c.style.display=(cat==='all'||c.dataset.cat.includes(cat))?'block':'none';
+    });
+  }
+</script>
+</body>
+</html>
